@@ -6,10 +6,11 @@ import Shopping.Cart;
 import Shopping.CartItem;
 import Users.Customer;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class CheckoutService {
-    private static final double SHIPPING_COST_PER_KG = 30.0;
+    private static final BigDecimal SHIPPING_COST_PER_KG = new BigDecimal("30.0");
 
     public static void checkout(Customer customer, Cart cart) {
         if (cart.isEmpty()) {
@@ -17,7 +18,7 @@ public class CheckoutService {
         }
 
         List<Shippable> toShip = new ArrayList<>();
-        double subtotal = 0.0;
+        BigDecimal subtotal = BigDecimal.ZERO;
         for (CartItem item : cart.getItems()) {
             Product product = item.product;
             int quantity = item.quantity;
@@ -30,8 +31,8 @@ public class CheckoutService {
                 throw new IllegalStateException("Products.Product expired: " + product.getName());
             }
 
-            double itemTotal = product.getPrice() * quantity;
-            subtotal += itemTotal;
+            BigDecimal itemTotal = product.getPrice().multiply(new BigDecimal(quantity));
+            subtotal = subtotal.add(itemTotal);
 
             if (product instanceof Shippable) {
                 for (int i = 0; i < quantity; i++) {
@@ -40,14 +41,16 @@ public class CheckoutService {
             }
         }
 
-        double totalWeight = toShip.stream().mapToDouble(Shippable::getWeight).sum();
-        double shippingCost = totalWeight > 0 ? SHIPPING_COST_PER_KG : 0;
-        double total = subtotal + shippingCost;
+        BigDecimal totalWeight = toShip.stream()
+                .map(Shippable::getWeight)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal shippingCost = totalWeight.compareTo(BigDecimal.ZERO) > 0 ? 
+                totalWeight.multiply(SHIPPING_COST_PER_KG) : BigDecimal.ZERO;
+        BigDecimal total = subtotal.add(shippingCost);
 
         if (!customer.canPay(total)) {
             throw new IllegalStateException("Users.Customer has insufficient balance");
         }
-
 
         if (!toShip.isEmpty()) {
             ShippingService.ship(toShip);
@@ -61,12 +64,13 @@ public class CheckoutService {
 
         System.out.println("\n** Checkout receipt **");
         for (CartItem item : cart.getItems()) {
-            System.out.printf("%dx %s\t%.0f\n", item.quantity, item.product.getName(), item.product.getPrice() * item.quantity);
+            BigDecimal itemTotal = item.product.getPrice().multiply(new BigDecimal(item.quantity));
+            System.out.printf("%dx %s\t%s\n", item.quantity, item.product.getName(), itemTotal.toString());
         }
         System.out.println("---------------------");
-        System.out.printf("Subtotal\t%.0f\n", subtotal);
-        System.out.printf("Shipping\t%.0f\n", shippingCost);
-        System.out.printf("Amount\t\t%.0f\n", total);
-        System.out.printf("Users.Customer Balance\t%.0f\n", customer.getBalance());
+        System.out.printf("Subtotal\t%s\n", subtotal.toString());
+        System.out.printf("Shipping\t%s\n", shippingCost.toString());
+        System.out.printf("Amount\t\t%s\n", total.toString());
+        System.out.printf("Users.Customer Balance\t%s\n", customer.getBalance().toString());
     }
 }

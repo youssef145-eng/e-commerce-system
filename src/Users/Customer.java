@@ -1,25 +1,27 @@
 package Users;
 
+import java.math.BigDecimal;
+
 public class Customer {
     private String name;
-    private double balance;
+    private BigDecimal balance;
 
-    public Customer(String name, double balance) {
+    public Customer(String name, BigDecimal balance) {
         this.name = name;
         this.balance = balance;
     }
 
-    public boolean canPay(double amount) {
-        return balance >= amount;
+    public boolean canPay(BigDecimal amount) {
+        return balance.compareTo(amount) >= 0;
     }
 
-    public void deduct(double amount) {
+    public void deduct(BigDecimal amount) {
         if (canPay(amount)) {
-            balance -= amount;
+            balance = balance.subtract(amount);
         }
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 

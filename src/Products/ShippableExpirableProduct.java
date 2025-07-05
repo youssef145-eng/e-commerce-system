@@ -1,17 +1,18 @@
 package Products;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ShippableExpirableProduct extends ExpirableProduct implements Shippable {
-    private double weight;
+    private BigDecimal weight;
 
-    public ShippableExpirableProduct(String name, double price, int quantity, LocalDate expiryDate, double weight) {
+    public ShippableExpirableProduct(String name, BigDecimal price, int quantity, LocalDate expiryDate, BigDecimal weight) {
         super(name, price, quantity, expiryDate);
         this.weight = weight;
     }
 
     @Override
-    public double getWeight() {
+    public BigDecimal getWeight() {
         return weight;
     }
 }
