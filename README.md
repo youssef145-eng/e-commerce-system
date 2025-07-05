@@ -11,27 +11,6 @@ A Java-based e-commerce system demonstrating Object-Oriented Programming princip
 - **Inventory Management**: Automatic stock reduction after purchase
 - **Expiry Date Validation**: Prevents purchase of expired products
 
-## 📁 Project Structure
-
-```
-src/
-├── Main.java                 # Main application entry point
-├── Products/                 # Product-related classes
-│   ├── Product.java         # Base product class
-│   ├── Shippable.java       # Interface for shippable items
-│   ├── ShippableProduct.java # Products that can be shipped
-│   ├── ExpirableProduct.java # Products with expiry dates
-│   └── ShippableExpirableProduct.java # Products that are both shippable and expirable
-├── Users/                   # User-related classes
-│   └── Customer.java        # Customer class with balance management
-├── Shopping/                # Shopping-related classes
-│   ├── Cart.java           # Shopping cart implementation
-│   └── CartItem.java       # Individual cart items
-└── Services/                # Business logic services
-    ├── CheckoutService.java # Checkout process logic
-    └── ShippingService.java # Shipping calculation and processing
-```
-
 ## 🏗️ Architecture
 
 ### Product Hierarchy
